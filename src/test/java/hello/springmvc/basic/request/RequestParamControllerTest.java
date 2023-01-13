@@ -10,22 +10,41 @@ import org.springframework.test.web.servlet.ResultActions;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultHandlers.print;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
-
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.content;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
 
 @WebMvcTest(RequestParamController.class)
 public class RequestParamControllerTest {
+
     @Autowired
     private MockMvc mvc;
 
     @Test
     void requestParamV1GetTest() throws Exception {
-        //given
-
         //when
         ResultActions perform = mvc.perform(get("/request-param-v1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().json("{\"age\":15,\"username\":\"userA\"}"));
+    }
+
+    @Test
+    void requestParamV1PostTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(post("/request-param-v1")
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().json("{\"age\":15,\"username\":\"userA\"}"));
+    }
+
+    @Test
+    void requestParamV2GetTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/request-param-v2")
                 .param("username","userA")
                 .param("age","15"));
         //then
@@ -34,17 +53,138 @@ public class RequestParamControllerTest {
     }
 
     @Test
-    void requestParamV1PostTest() throws Exception {
-        //given
-
+    void requestParamV2PostTest() throws Exception {
         //when
-        ResultActions perform = mvc.perform(post("/request-param-v1")
-                .contentType(MediaType.APPLICATION_JSON)
-                .accept(MediaType.APPLICATION_JSON)
+        ResultActions perform = mvc.perform(post("/request-param-v2")
                 .param("username","userA")
                 .param("age","15"));
         //then
-        perform.andDo(print()).andExpect(status().isOk());
-
+        perform.andDo(print())
+                .andExpect(content().string("username=userA, age=15"));
     }
+
+    @Test
+    void requestParamV3GetTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/request-param-v3")
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void requestParamV3PostTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(post("/request-param-v3")
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void requestParamV4GetTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/request-param-v4")
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void requestParamV4PostTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(post("/request-param-v4")
+                .param("username","userA")
+                .param("age","15"));
+        //then
+        perform.andDo(print())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void requestParamRequiredGetTest() throws Exception {
+        //when
+        ResultActions performBadRequest = mvc.perform(get("/request-param-required")
+                .param("age","15"));
+        ResultActions perform = mvc.perform(get("/request-param-required")
+                .param("username","userA"));
+
+        //then
+        performBadRequest.andDo(print())
+                .andExpect(status().isBadRequest());
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=userA, age=null"));
+    }
+
+    @Test
+    void requestParamRequiredPostTest() throws Exception {
+        //when
+        ResultActions performBadRequest = mvc.perform(post("/request-param-required")
+                .param("age","15"));
+        ResultActions perform = mvc.perform(post("/request-param-required")
+                .param("username","userA"));
+
+        //then
+        performBadRequest.andDo(print())
+                .andExpect(status().isBadRequest());
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=userA, age=null"));
+    }
+
+    @Test
+    void requestParamDefaultGetTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/request-param-default"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=guest, age=-1"));
+    }
+
+    @Test
+    void requestParamDefaultPostTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(post("/request-param-default"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=guest, age=-1"));
+    }
+
+    @Test
+    void requestParamMapGetTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/request-param-map")
+                .param("username","userA")
+                .param("age","15"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void requestParamMapPostTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(post("/request-param-map")
+                .param("username","userA")
+                .param("age","15"));
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("username=userA, age=15"));
+    }
+
 }
