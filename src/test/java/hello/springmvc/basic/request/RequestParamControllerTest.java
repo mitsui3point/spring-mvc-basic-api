@@ -3,7 +3,6 @@ package hello.springmvc.basic.request;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.ResultActions;
 
@@ -23,8 +22,8 @@ public class RequestParamControllerTest {
     void requestParamV1GetTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(get("/request-param-v1")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().json("{\"age\":15,\"username\":\"userA\"}"));
@@ -34,8 +33,8 @@ public class RequestParamControllerTest {
     void requestParamV1PostTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(post("/request-param-v1")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().json("{\"age\":15,\"username\":\"userA\"}"));
@@ -45,8 +44,8 @@ public class RequestParamControllerTest {
     void requestParamV2GetTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(get("/request-param-v2")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -56,8 +55,8 @@ public class RequestParamControllerTest {
     void requestParamV2PostTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(post("/request-param-v2")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -67,8 +66,8 @@ public class RequestParamControllerTest {
     void requestParamV3GetTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(get("/request-param-v3")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -78,8 +77,8 @@ public class RequestParamControllerTest {
     void requestParamV3PostTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(post("/request-param-v3")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -89,8 +88,8 @@ public class RequestParamControllerTest {
     void requestParamV4GetTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(get("/request-param-v4")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -100,8 +99,8 @@ public class RequestParamControllerTest {
     void requestParamV4PostTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(post("/request-param-v4")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
         //then
         perform.andDo(print())
                 .andExpect(content().string("username=userA, age=15"));
@@ -111,9 +110,9 @@ public class RequestParamControllerTest {
     void requestParamRequiredGetTest() throws Exception {
         //when
         ResultActions performBadRequest = mvc.perform(get("/request-param-required")
-                .param("age","15"));
+                .param("age", "15"));
         ResultActions perform = mvc.perform(get("/request-param-required")
-                .param("username","userA"));
+                .param("username", "userA"));
 
         //then
         performBadRequest.andDo(print())
@@ -127,9 +126,9 @@ public class RequestParamControllerTest {
     void requestParamRequiredPostTest() throws Exception {
         //when
         ResultActions performBadRequest = mvc.perform(post("/request-param-required")
-                .param("age","15"));
+                .param("age", "15"));
         ResultActions perform = mvc.perform(post("/request-param-required")
-                .param("username","userA"));
+                .param("username", "userA"));
 
         //then
         performBadRequest.andDo(print())
@@ -165,8 +164,8 @@ public class RequestParamControllerTest {
     void requestParamMapGetTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(get("/request-param-map")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
 
         //then
         perform.andDo(print())
@@ -178,13 +177,54 @@ public class RequestParamControllerTest {
     void requestParamMapPostTest() throws Exception {
         //when
         ResultActions perform = mvc.perform(post("/request-param-map")
-                .param("username","userA")
-                .param("age","15"));
+                .param("username", "userA")
+                .param("age", "15"));
 
         //then
         perform.andDo(print())
                 .andExpect(status().isOk())
                 .andExpect(content().string("username=userA, age=15"));
+    }
+
+    @Test
+    void modelAttributeV1Test() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/model-attribute-v1")
+                .param("username", "userA")
+                .param("age", "15")
+        );
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("HelloData(username=userA, age=15)"));
+    }
+
+    @Test
+    void modelAttributeV1BindingExceptionTest() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/model-attribute-v1")
+                .param("username", "userA")
+                .param("age", "abc")
+        );
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isBadRequest());
+    }
+
+    @Test
+    void modelAttributeV2Test() throws Exception {
+        //when
+        ResultActions perform = mvc.perform(get("/model-attribute-v2")
+                .param("username", "userA")
+                .param("age", "15")
+        );
+
+        //then
+        perform.andDo(print())
+                .andExpect(status().isOk())
+                .andExpect(content().string("HelloData(username=userA, age=15)"));
     }
 
 }

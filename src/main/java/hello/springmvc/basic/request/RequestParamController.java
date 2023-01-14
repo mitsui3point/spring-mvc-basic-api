@@ -1,10 +1,12 @@
 package hello.springmvc.basic.request;
 
+import hello.springmvc.basic.HelloData;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Controller;
 import org.springframework.util.MultiValueMap;
+import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -113,4 +115,43 @@ public class RequestParamController {
         return "username=" + paramMap.get("username").get(0) + ", age=" + paramMap.get("age").get(0);
     }
 
+    /**
+     * {@link ModelAttribute} 사용 <br>
+     * 참고: model.addAttribute(helloData) 코드도 함께 자동 적용됨, <br>
+     * <p>
+     * 스프링 MVC 는 {@code @ModelAttribute} 가 있으면 다음을 실행한다.<br>
+     * HelloData 객체를 생성한다.<br>
+     * 요청 파라미터의 이름으로 HelloData 객체의 프로퍼티를 찾는다. 그리고 해당 프로퍼티의 setter를 호출해서 파라미터의 값을 입력(바인딩) 한다.<br>
+     * 예) 파라미터 이름이 username 이면 setUsername() 메서드를 찾아서 호출하면서 값을 입력한다.<br>
+     * <p>
+     * 프로퍼티<br>
+     * 객체에 getUsername() , setUsername() 메서드가 있으면, 이 객체는 username 이라는 프로퍼티를 가지고 있다.<br>
+     * username 프로퍼티의 값을<br>
+     * 변경하면 setUsername() 이 호출되고, <br>
+     * 조회하면 getUsername() 이 호출된다.<br>
+     */
+    @RequestMapping("/model-attribute-v1")
+    @ResponseBody
+    public String modelAttributeV1(@ModelAttribute HelloData helloData) {
+        log.info("helloData={}", helloData);
+        return helloData.toString();
+    }
+
+    /**
+     * {@link ModelAttribute} 생략 가능<br>
+     * <p>
+     * {@code @ModelAttribute}는 생략할 수 있다.<br>
+     * 그런데 {@code @RequestParam} 도 생략할 수 있으니 혼란이 발생할 수 있다.<br>
+     * 스프링은 해당 생략시 다음과 같은 규칙을 적용한다.<br>
+     * # {@code String , int , Integer} 같은 단순 타입 = {@code @RequestParam}<br>
+     * # 나머지 = {@code @ModelAttribute}(argument resolver 로 지정해둔 타입 외)<br>
+     * <p>
+     * argument resolver 예시) {@link HttpServletRequest}, {@link HttpServletResponse} ...
+     */
+    @RequestMapping("/model-attribute-v2")
+    @ResponseBody
+    public String modelAttributeV2(HelloData helloData) {
+        log.info("helloData={}", helloData);
+        return helloData.toString();
+    }
 }
